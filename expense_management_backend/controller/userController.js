@@ -19,6 +19,8 @@ const registerUser = asyncHandler(async(req,res) => {
   }
 })
 
+
+
 const loginUser = asyncHandler(async (req, res) => {
   try{
     const { email, password } = req.body;
@@ -36,9 +38,11 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 })
 
-const getAllExpense = asyncHandler(async (req, res) => {
+
+
+const getAllUserExpense = asyncHandler(async (req, res) => {
   try{
-    const expenses = await Expense.find({});
+    const expenses = await User.find({});
     if(!expenses) {
       res.status(404).json({message: " Expenses not found"});
     }
@@ -48,7 +52,7 @@ const getAllExpense = asyncHandler(async (req, res) => {
   }
 })
 
-const getExpense = asyncHandler(async(req,res) => {
+const getUserExpense = asyncHandler(async(req,res) => {
   try{
     const expense = await Expense.findById(req.params.id);
     if(!expense){
@@ -59,3 +63,10 @@ const getExpense = asyncHandler(async(req,res) => {
     res.status(500).json({message: "Internal Server Error"});
   }
 })
+
+// module.exports = {
+//   registerUser,
+//   loginUser,
+//   getAllExpense,
+//   getExpense
+// }

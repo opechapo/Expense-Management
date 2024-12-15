@@ -9,8 +9,6 @@ const expenseRoutes = require("./Components/routes/expenseRoutes");
 
 PORT= 5000
 
-
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -20,7 +18,6 @@ app.use((req, res,next) => {
 })
 
 app.use("/expense", expenseRoutes); 
-// app.use(errorHandler);
 
 app.get('/',(req, res) => console.log("Hello world"))
 
