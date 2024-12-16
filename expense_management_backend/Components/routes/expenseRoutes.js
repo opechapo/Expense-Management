@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   createExpense,
-  // getExpense,
+  getExpense,
   updateExpense,
   getAllExpenses,
   deleteExpenses,
@@ -10,7 +10,7 @@ const {
 
 router.post("/createExpense", createExpense);
 router.get("/", getAllExpenses);
-// router.get("/:expenseId", getExpense);
+router.get("/:expenseId", getExpense);
 router.patch("/:expenseId", updateExpense);
 router.delete("/:expenseId", deleteExpenses);
 

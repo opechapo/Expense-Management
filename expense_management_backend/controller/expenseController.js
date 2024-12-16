@@ -21,37 +21,12 @@ const createExpense = asyncHandler(async (req, res) => {
     // await expense.save();
     res.status(201).json(expense);
   } catch (error) {
+    console.error(error);
     res.status(400).json({ message: error.message });
   }
 });
 
-// Get all expenses
-
-const getAllExpenses = asyncHandler(async(req, res) => {
-  try{
-    const expenses = await Expense.find({});
-    if(!expenses) {
-      res.status(404).json({message: "Expenses not found"});
-    }
-    res.status(200).json(expenses);
-  }catch{
-    res.status(500).json({message: "Internal Server Error"});
-  }
-})
-
-const getExpense = asyncHandler(async(req,res) => {
-  try{
-    const expense = await Expense.findById(req.params.id);
-    if(!expense) {
-      res.status(404).json({message: "Expense not found"});
-    }
-    res.status(200).json(expense);
-  }catch{
-    res.status(500).json({message: "Internal Server Error"});
-  }
-})
-
-
+//Update Expense
 
 const updateExpense = asyncHandler(async (req, res) => {
   try {
@@ -63,25 +38,64 @@ const updateExpense = asyncHandler(async (req, res) => {
       return res.status(404).json({ message: "Expense not found" });
     }
     res.status(200).json(expense);
-  } catch {
+  } catch(error) {
+    console.error(error);
     res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
+
+
+const getExpense = asyncHandler(async(req,res) => {
+  try{
+    const {expenseId} = req.params
+    const expense = await Expense.findById(expenseId);
+    if(expense) {
+    const { title, amount, date, category } = req.body;
+    res.status(200).json(expense);
+
+    }else {
+      res.status(404).json({message: "Expense not found!"});
+
+    }
+  }catch{error}{
+    console.error(error);
+    res.status(500).json({message: "Internal Server Error"});
+  }
+})
+
+
+// Get all expenses
+
+const getAllExpenses = asyncHandler(async(req, res) => {
+  try{
+    // const expenses = await Expense.find({});
+    const Expenses = await Expense.find().sort('-createdAt');
+
+    if(!Expenses) {
+      res.status(404).json({message: "Expenses not found"});
+    }
+    res.status(200).json(Expenses);
+  }catch(error){
+    console.error(error);
+    res.status(500).json({message: "Internal Server Error"});
+  }
+})
+
+
 const deleteExpenses = asyncHandler(async(req, res) => {
   try{
-    const {userId} = req.params;
-    const user = await user.findById(userId);
-    if (!user) {
+    const {expenseId} = req.params;
+    const expense = await Expense.findById(expenseId);
+    if (!expense) {
       return res.status(404).json({ message: "User not found" });
     }
-    await user.remove();
-    res.json({ message: "User deleted successfully" });
+    await expense.deleteOne();
+    res.status(200).json({ message: "User deleted successfully" });
   }catch (error){
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: 'Internal server error!' });
   }
-  
  
 })
 
