@@ -83,6 +83,8 @@ const getAllExpenses = asyncHandler(async(req, res) => {
 })
 
 
+//deleteExpenses
+
 const deleteExpenses = asyncHandler(async(req, res) => {
   try{
     const {expenseId} = req.params;

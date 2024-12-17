@@ -1,74 +1,103 @@
 const User = require("../model/userModels");
+const Expense = require("../model/expenseModels");
 const asyncHandler = require('express-async-handler');
 
 
-const registerUser = asyncHandler(async(req,res) => {
-  try{
-  const { name, email, password } = req.body;
-  if(!name || !email || !password){
-    return res.status(400).json({message: "All fields are required"});
 
-  }else if(password.lenght <6 ){
-    res.status(400).json({message: "Password must be at least 6 characters"});
-  }else if(password.length > 12){
-    res.status(400).json({message: "Password must be less than 12 characters"});
-  }  
-  }catch{
-    res.status(500).json({message: "Internal Server Error"});
+// Register User
 
+const registerUser = asyncHandler(async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    } 
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    } 
+    if (password.length > 12) {
+      return res.status(400).json({ message: "Password must be less than 12 characters" });
+    }
+
+    res.status(201).json({ message: "User registered successfully" });
+
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
-})
+});
 
 
 
+// Login User
 const loginUser = asyncHandler(async (req, res) => {
-  try{
+  try {
     const { email, password } = req.body;
-    if(!email || !password){
-      return res.status(400).json({message: "All fields are required"});
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-    const user = await User.findOne({email});
-    if(!user ||!(await user.matchPassword(password))){
-      return res.status(401).json({message: "Invalid email or password"});
+
+    const user = await User.findOne({ email });
+    if (!user || !(await user.matchPassword(password))) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
-    res.json({message: "Logged in successfully"});
-    
-  }catch{
-    res.status(500).json({message: "Internal Server Error"});
+
+    res.json({ message: "Logged in successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
+});
+
+//logOutUser
+
+const logoutUser = asyncHandler(async(req, res) => {
+  res.cookie('token', '', {
+      path: '/',
+      httpOnly: true,
+      expires: new Date(0),  
+      sameSite: 'none',
+      secure: true
+  })
+  return res.status(200).json({message: 'Logout Successful'})
 })
 
-const getUserExpense = asyncHandler(async(req,res) => {
 
-  try{
-    const {expenseId} = req.params
-    const expense = await expenseModels.findById(expenseId);
-    if(!expense){
-      res.status(404).json({message: "Expense not found"});
+
+
+// Get User Expense
+
+const getUserExpense = asyncHandler(async (req, res) => {
+  try {
+    const { expenseId } = req.params;
+
+    const expense = await Expense.findById(expenseId);
+    if (!expense) {
+      return res.status(404).json({ message: "Expense not found" });
     }
+
     res.status(200).json(expense);
-  }catch{
-    res.status(500).json({message: "Internal Server Error"});
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
-})
+});
 
-const getAllUserExpense = asyncHandler(async (req, res) => {
-  try{
-    const expenses = await User.find({});
-    if(!expenses) {
-      res.status(404).json({message: " Expenses not found"});
-    }
+// Get All User Expenses
+
+const getAllUserExpenses = asyncHandler(async (req, res) => {
+  try {
+    const expenses = await Expense.find().sort('-createdAt'); 
+
     res.status(200).json(expenses);
-  }catch{
-    res.status(500).json({message: "Internal Server Error"});
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
-})
+});
 
-
-
-// module.exports = {
-//   registerUser,
-//   loginUser,
-//   getAllExpense,
-//   getExpense
-// }
+module.exports = {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getUserExpense,
+  getAllUserExpenses, 
+};
