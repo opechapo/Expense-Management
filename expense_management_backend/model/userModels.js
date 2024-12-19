@@ -14,10 +14,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  role: {
-    type: String,
-    default: 'user'
-  },
+  // role: {
+  //   type: String,
+  //   default: 'user'
+  // },
   // posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }]
 },{
   timestamps: true,

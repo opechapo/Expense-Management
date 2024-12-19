@@ -18,21 +18,21 @@ const expenseSchema = new mongoose.Schema(
       ],
     },
 
-    date: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
-    notes: {
-      type: String,
-      trim: true,
-    },
-    createdAt: { type: Date, default: Date.now },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    // date: {
+    //   type: Date,
+    //   required: true,
+    //   default: Date.now,
+    // },
+    // notes: {
+    //   type: String,
+    //   trim: true,
+    // },
+    // createdAt: { type: Date, default: Date.now },
+    // createdBy: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "User",
+    //   required: true,
+    // },
   },
   {
     timestamps: true,
