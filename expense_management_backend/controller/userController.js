@@ -1,32 +1,73 @@
 const User = require("../model/userModels");
 const Expense = require("../model/expenseModels");
 const asyncHandler = require('express-async-handler');
+const bcrypt = require('bcryptjs');
+const generateToken = require('../utils/generateToken');
 
 
-
-// Register User
 
 const registerUser = asyncHandler(async (req, res) => {
+  const { firstName, lastName, email, password, confirmPassword } = req.body;
+
+  // Validate input fields
+  if (!firstName || !lastName || !email || !password || !confirmPassword) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters' });
+  }
+
+  if (password.length > 12) {
+    return res.status(400).json({ message: 'Password must be less than 12 characters' });
+  }
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: 'Passwords do not match' });
+  }
+
+  // Check if the user already exists
+  const userExists = await userModel.findOne({ email });
+  if (userExists) {
+    return res.status(400).json({ message: 'Email already exists' });
+  }
+
   try {
-    const { name, email, password } = req.body;
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
-    } 
-    if (password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
-    } 
-    if (password.length > 12) {
-      return res.status(400).json({ message: "Password must be less than 12 characters" });
+    // Create a new user in the database
+    const user = await userModel.create({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+
+    // Generate JWT token
+    const token = generateToken(user._id);
+
+    // Set the token in a secure cookie
+    res.cookie('token', token, {
+      path: '/',
+      httpOnly: true,
+      expires: new Date(Date.now() + 1000 * 86400), // expires in 24 hours
+      sameSite: 'none',
+      secure: true,
+    });
+
+    // Respond with user details (exclude sensitive data like password)
+    if (user) {
+      const { _id, firstName, lastName, email } = user;
+      return res.status(201).json({ _id, firstName, lastName, email, token });
+    } else {
+      return res.status(400).json({ message: 'Failed to create user' });
     }
-
-    res.status(201).json({ message: "User registered successfully" });
-
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error(error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
-
 
 
 // Login User
@@ -127,5 +168,5 @@ module.exports = {
   logoutUser,
   getUser,
   deleteUser,
-  updateUser 
+  updateUser, 
 };

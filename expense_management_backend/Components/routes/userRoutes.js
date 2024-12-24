@@ -17,6 +17,8 @@ router.get('/:userId', protectUser, getUser);
 router.patch('/:userId', protectUser, updateUser);
 router.delete('/:userId', protectUser, deleteUser);
 router.post('/logout', logoutUser);
+
+
 module.exports = router;
 
 
